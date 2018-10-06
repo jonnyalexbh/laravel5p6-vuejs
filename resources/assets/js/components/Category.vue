@@ -38,7 +38,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr v-for='category in arrayCategory' :key="category.id">
                 <td>
                   <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalNuevo">
                     <i class="icon-pencil"></i>
@@ -47,70 +47,15 @@
                     <i class="icon-trash"></i>
                   </button>
                 </td>
-                <td>Equipos</td>
-                <td>Dispositivos electrónicos</td>
+                <td v-text="category.name"></td>
+                <td v-text="category.description"></td>
                 <td>
-                  <span class="badge badge-success">Activo</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalNuevo">
-                    <i class="icon-pencil"></i>
-                  </button> &nbsp;
-                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalEliminar">
-                    <i class="icon-trash"></i>
-                  </button>
-                </td>
-                <td>Equipos</td>
-                <td>Dispositivos electrónicos</td>
-                <td>
-                  <span class="badge badge-success">Activo</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalNuevo">
-                    <i class="icon-pencil"></i>
-                  </button> &nbsp;
-                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalEliminar">
-                    <i class="icon-trash"></i>
-                  </button>
-                </td>
-                <td>Equipos</td>
-                <td>Dispositivos electrónicos</td>
-                <td>
-                  <span class="badge badge-secondary">Inactivo</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalNuevo">
-                    <i class="icon-pencil"></i>
-                  </button> &nbsp;
-                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalEliminar">
-                    <i class="icon-trash"></i>
-                  </button>
-                </td>
-                <td>Equipos</td>
-                <td>Dispositivos electrónicos</td>
-                <td>
-                  <span class="badge badge-secondary">Inactivo</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalNuevo">
-                    <i class="icon-pencil"></i>
-                  </button>&nbsp;
-                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalEliminar">
-                    <i class="icon-trash"></i>
-                  </button>
-                </td>
-                <td>Equipos</td>
-                <td>Dispositivos electrónicos</td>
-                <td>
-                  <span class="badge badge-success">Activo</span>
+                  <div v-if="category.condition">
+                    <span class="badge badge-success">Activo</span>
+                  </div>
+                  <div v-else>
+                    <span class="badge badge-danger">Desactivado</span>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -206,8 +151,26 @@
 
 <script>
 export default {
+  data() {
+    return {
+      name: '',
+      description: '',
+      arrayCategory : [],
+    }
+  },
+  methods: {
+    listCategory(){
+      let me = this;
+      axios.get('category').then(function (response) {
+        me.arrayCategory = response.data;
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
+  },
   mounted() {
-    console.log('Component mounted.')
+    this.listCategory();
   }
 }
 </script>
