@@ -120,7 +120,7 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
             <button type="button" v-if="actionType==1" class="btn btn-primary" @click="registerCategory()">Guardar</button>
-            <button type="button" v-if="actionType==2" class="btn btn-primary">Actualizar</button>
+            <button type="button" v-if="actionType==2" class="btn btn-primary" @click="updateCategory()">Actualizar</button>
           </div>
         </div>
         <!-- /.modal-content -->
@@ -158,6 +158,7 @@
 export default {
   data() {
     return {
+      category_id: 0,
       name: "",
       description: "",
       arrayCategory: [],
@@ -188,6 +189,26 @@ export default {
       let me = this;
       axios
         .post("category/register", {
+          name: this.name,
+          description: this.description
+        })
+        .then(function(response) {
+          me.closeModal();
+          me.listCategory();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    updateCategory() {
+      if (this.validateCategory()) {
+        return;
+      }
+
+      let me = this;
+      axios
+        .put("category/update", {
+          id: this.category_id,
           name: this.name,
           description: this.description
         })
@@ -231,6 +252,13 @@ export default {
               break;
             }
             case "update": {
+              this.modal = 1;
+              this.titleModal = "Actualizar Categoría";
+              this.actionType = 2;
+              this.category_id = data["id"];
+              this.name = data["name"];
+              this.description = data["description"];
+              break;
             }
           }
         }
