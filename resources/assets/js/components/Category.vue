@@ -102,7 +102,6 @@
                 <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
                 <div class="col-md-9">
                   <input type="text" v-model="name" class="form-control" placeholder="Nombre de categoría">
-                  <span class="help-block">(*) Ingrese el nombre de la categoría</span>
                 </div>
               </div>
               <div class="form-group row">
@@ -110,6 +109,11 @@
                 <div class="col-md-9">
                   <input type="text" v-model="description" class="form-control" placeholder="Ingrese Descripción">
                 </div>
+              </div>
+              <div v-show="errorCategory" class="form-group row div-error">
+                    <div class="text-center text-error">
+                        <div v-for="error in errorShowMsjCategory" :key="error" v-text="error"></div>
+                    </div>
               </div>
             </form>
           </div>
@@ -159,7 +163,9 @@ export default {
       arrayCategory: [],
       modal: 0,
       titleModal: "",
-      actionType: 0
+      actionType: 0,
+      errorCategory: 0,
+      errorShowMsjCategory: []
     };
   },
   methods: {
@@ -175,6 +181,10 @@ export default {
         });
     },
     registerCategory() {
+      if (this.validateCategory()) {
+        return;
+      }
+
       let me = this;
       axios
         .post("category/register", {
@@ -188,6 +198,19 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+    validateCategory() {
+      this.errorCategory = 0;
+      this.errorShowMsjCategory = [];
+
+      if (!this.name)
+        this.errorShowMsjCategory.push(
+          "El nombre de la categoría no puede estar vacío."
+        );
+
+      if (this.errorShowMsjCategory.length) this.errorCategory = 1;
+
+      return this.errorCategory;
     },
     closeModal() {
       this.modal = 0;
@@ -229,5 +252,13 @@ export default {
   opacity: 1 !important;
   position: absolute !important;
   background-color: #3c29297a !important;
+}
+.div-error {
+  display: flex;
+  justify-content: center;
+}
+.text-error {
+  color: red !important;
+  font-weight: bold;
 }
 </style>
