@@ -17,7 +17,16 @@ class CategoryController extends Controller
             return redirect('/');
         }
 
-        $categories = Category::paginate(2);
+        $searchFor = $request->searchFor;
+        $criterion = $request->criterion;
+
+        if ($searchFor==''){
+            $categories = Category::orderBy('id', 'desc')->paginate(3);
+        }
+        else{
+            $categories = Category::where($criterion, 'like', '%'. $searchFor . '%')->orderBy('id', 'desc')->paginate(3);
+        }
+
         return [
             'pagination' => [
                 'total' => $categories->total(),

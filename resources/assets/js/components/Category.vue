@@ -19,12 +19,12 @@
           <div class="form-group row">
             <div class="col-md-6">
               <div class="input-group">
-                <select class="form-control col-md-3" id="opcion" name="opcion">
-                  <option value="nombre">Nombre</option>
-                  <option value="descripcion">Descripción</option>
+                <select class="form-control col-md-3" v-model="criterion">
+                  <option value="name">Nombre</option>
+                  <option value="description">Descripción</option>
                 </select>
-                <input type="text" id="texto" name="texto" class="form-control" placeholder="Texto a buscar">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                <input type="text" v-model="searchFor" @keyup.enter="listCategory(1,searchFor,criterion)" class="form-control" placeholder="Texto a buscar">
+                <button type="submit" @click="listCategory(1,searchFor,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
               </div>
             </div>
           </div>
@@ -70,13 +70,13 @@
           <nav>
             <ul class="pagination">
               <li class="page-item" v-if="pagination.current_page > 1">
-                <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page - 1)">Ant</a>
+                <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page - 1, searchFor, criterion)">Ant</a>
               </li>
               <li class="page-item" v-for="page in pagesNumber" :key="page" :class="[page == isActived ? 'active' : '']">
-                <a class="page-link" href="#" @click.prevent="changePage(page)" v-text="page"></a>
+                <a class="page-link" href="#" @click.prevent="changePage(page, searchFor, criterion)" v-text="page"></a>
               </li>
               <li class="page-item" v-if="pagination.current_page < pagination.last_page">
-                <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page + 1)">Sig</a>
+                <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page + 1, searchFor, criterion)">Sig</a>
               </li>
             </ul>
           </nav>
@@ -150,7 +150,9 @@ export default {
         from: 0,
         to: 0
       },
-      offset: 3
+      offset: 3,
+      criterion: "name",
+      searchFor: ""
     };
   },
   computed: {
@@ -180,9 +182,15 @@ export default {
     }
   },
   methods: {
-    listCategory(page) {
+    listCategory(page, searchFor, criterion) {
       let me = this;
-      var url = "category?page=" + page;
+      var url =
+        "category?page=" +
+        page +
+        "&searchFor=" +
+        searchFor +
+        "&criterion=" +
+        criterion;
       axios
         .get(url)
         .then(function(response) {
@@ -194,12 +202,12 @@ export default {
           console.log(error);
         });
     },
-    changePage(page) {
+    changePage(page, searchFor, criterion) {
       let me = this;
       // update the current page
       me.pagination.current_page = page;
       // send the request to view the data of this page
-      me.listCategory(page);
+      me.listCategory(page, searchFor, criterion);
     },
     registerCategory() {
       if (this.validateCategory()) {
@@ -214,7 +222,7 @@ export default {
         })
         .then(function(response) {
           me.closeModal();
-          me.listCategory();
+          me.listCategory(1, "", "name");
         })
         .catch(function(error) {
           console.log(error);
@@ -234,7 +242,7 @@ export default {
         })
         .then(function(response) {
           me.closeModal();
-          me.listCategory();
+          me.listCategory(1, "", "name");
         })
         .catch(function(error) {
           console.log(error);
@@ -262,7 +270,7 @@ export default {
               id: id
             })
             .then(function(response) {
-              me.listCategory();
+              me.listCategory(1, "", "name");
               swal(
                 "Desactivado!",
                 "El registro ha sido desactivado con éxito.",
@@ -301,7 +309,7 @@ export default {
               id: id
             })
             .then(function(response) {
-              me.listCategory();
+              me.listCategory(1, "", "name");
               swal(
                 "Activado!",
                 "El registro ha sido activado con éxito.",
@@ -364,7 +372,7 @@ export default {
     }
   },
   mounted() {
-    this.listCategory();
+    this.listCategory(1, this.searchFor, this.criterion);
   }
 };
 </script>
